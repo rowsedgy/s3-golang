@@ -84,15 +84,32 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// process video faststart
+
+	processedVideoPath, err := processVideoForFastStart(tempFile.Name())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "error processing video faststart", err)
+		return
+	}
+
+	processedFile, err := os.Open(processedVideoPath)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "error opening processed file", err)
+		return
+	}
+
+	defer os.Remove(processedFile.Name())
+	defer processedFile.Close()
+
 	// read video parameters
-	aspectRatio, err := getVideoAspectRatio(tempFile.Name())
+	aspectRatio, err := getVideoAspectRatio(processedFile.Name())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "error getting video parameters", err)
 		return
 	}
 
 	// set pointer to beginning of file to read it again
-	tempFile.Seek(0, io.SeekStart)
+	// tempFile.Seek(0, io.SeekStart)
 
 	// key := "getAssetPath(mType)"
 	key := ""
@@ -109,7 +126,7 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 	_, err = cfg.s3Client.PutObject(r.Context(), &s3.PutObjectInput{
 		Bucket:      &cfg.s3Bucket,
 		Key:         &key,
-		Body:        tempFile,
+		Body:        processedFile,
 		ContentType: &mediaType,
 	})
 	if err != nil {

@@ -63,3 +63,36 @@ func processVideoForFastStart(filePath string) (string, error) {
 
 	return outPath, nil
 }
+
+// func generatePresignedURL(s3Client *s3.Client, bucket, key string, expireTime time.Duration) (string, error) {
+// 	presignClient := s3.NewPresignClient(s3Client)
+// 	presignedUrl, err := presignClient.PresignGetObject(context.Background(), &s3.GetObjectInput{
+// 		Bucket: &bucket,
+// 		Key:    &key,
+// 	},
+// 		s3.WithPresignExpires(expireTime))
+
+// 	if err != nil {
+// 		return "", err
+// 	}
+
+// 	return presignedUrl.URL, nil
+// }
+
+// func (cfg *apiConfig) dbVideoToSignedVideo(video database.Video) (database.Video, error) {
+// 	if video.VideoURL == nil {
+// 		return video, nil
+// 	}
+// 	params := strings.Split(*video.VideoURL, ",")
+// 	bucket := params[0]
+// 	key := params[1]
+
+// 	presignedUrl, err := generatePresignedURL(cfg.s3Client, bucket, key, time.Minute*2)
+// 	if err != nil {
+// 		return database.Video{}, err
+// 	}
+
+// 	video.VideoURL = &presignedUrl
+
+// 	return video, nil
+// }

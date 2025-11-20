@@ -134,7 +134,7 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	newURL := cfg.getS3URL(key)
+	newURL := cfg.getCDNURL(key)
 
 	err = cfg.db.UpdateVideo(database.Video{
 		ID:           videoID,
@@ -153,5 +153,13 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		respondWithError(w, http.StatusInternalServerError, "error updating video", err)
 		return
 	}
+
+	// signedVideo, err := cfg.dbVideoToSignedVideo(video)
+	// if err != nil {
+	// 	respondWithError(w, http.StatusInternalServerError, "error after uploading video", err)
+	// 	return
+	// }
+
+	respondWithJSON(w, http.StatusOK, video)
 
 }

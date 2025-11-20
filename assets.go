@@ -36,8 +36,12 @@ func (cfg apiConfig) getAssetURL(assetPath string) string {
 	return fmt.Sprintf("http://localhost:%s/assets/%s", cfg.port, assetPath)
 }
 
-func (cfg apiConfig) getS3URL(key string) string {
-	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cfg.s3Bucket, cfg.s3Region, key)
+// func (cfg apiConfig) getS3URL(key string) string {
+// 	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cfg.s3Bucket, cfg.s3Region, key)
+// }
+
+func (cfg apiConfig) getCDNURL(key string) string {
+	return fmt.Sprintf("https://%s/%s", cfg.s3CfDistribution, key)
 }
 
 func mediaTypeToExt(mediaType string) string {
